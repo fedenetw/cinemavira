@@ -1,0 +1,140 @@
+---
+/* Layout comune: head, header, subnav (sezioni rassegne), footer.
+   I contenuti di ogni pagina arrivano dal frontmatter del markdown:
+   - title / description  → head
+   - activeNav            → voce del menu principale evidenziata ('su-di-noi' | 'estiva' | 'invernale' | 'contatti' | 'galleria')
+   - section              → 'estiva' | 'invernale' (rende la subnav)
+   - subnavActive         → voce della subnav evidenziata (es. 'estate-2024', 'prezzi')
+   - logoText / logoAlt   → personalizzazioni del logo
+   - icon                 → override href favicon (di default foto/img.png)
+   I link sono relativi: il sito continua a funzionare da qualsiasi sottopath. */
+
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+const root = '../'.repeat(segments.length);
+const subnavPrefix = segments.length > 1 ? '../' : '';
+const aboutPage = segments.length === 1 && segments[0] === 'about';
+
+/* Con le pagine .md il frontmatter vive in Astro.props.frontmatter (e NON
+   direttamente in Astro.props); dai file .astro arriva direttamente in props.
+   Facciamo l'unione dei due per supportare entrambi i casi. */
+const front = { ...Astro.props, ...(Astro.props.frontmatter || {}) };
+
+const {
+  title,
+  description,
+  activeNav = null,
+  section = null,
+  subnavActive = null,
+  logoText = false,
+  logoAlt = null,
+  icon = 'foto/img.png',
+} = front;
+
+const estivaActive = (key) => section === 'estiva' && subnavActive === key;
+const invernaleActive = (key) => section === 'invernale' && subnavActive === key;
+---
+
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content={description}>
+    <title>{title}</title>
+    <link rel="icon" href={root + icon} type="image/svg+xml">
+    <link rel="stylesheet" href={root + 'css/style.css'}>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href={root + 'index.html'} class="logo">
+          <div class="logo-icon" aria-hidden="true"><img src={root + 'foto/img.png'} {...(logoAlt ? { alt: logoAlt } : {})}></div>
+          {logoText && <div class="logo-text">
+            <strong>Amici del Cinema</strong>
+            <span>del Gambarogno</span>
+          </div>}
+        </a>
+        <button class="nav-toggle" aria-label="Menu" aria-expanded="false">Menu</button>
+        <nav class="main-nav" aria-label="Navigazione principale">
+          <ul>
+            <li>
+              {activeNav === 'su-di-noi' && <a href={root + 'index.html'} class="active">Su di noi</a>}
+              {activeNav !== 'su-di-noi' && <a href={root + 'index.html'}>Su di noi</a>}
+            </li>
+            <li>
+              {activeNav === 'estiva' && <a href={root + 'rassegna-estiva/index.html'} class="active">Rassegna estiva</a>}
+              {activeNav !== 'estiva' && <a href={root + 'rassegna-estiva/index.html'}>Rassegna estiva</a>}
+            </li>
+            <li>
+              {activeNav === 'invernale' && <a href={root + 'rassegna-invernale/index.html'} class="active">Rassegna invernale</a>}
+              {activeNav !== 'invernale' && <a href={root + 'rassegna-invernale/index.html'}>Rassegna invernale</a>}
+            </li>
+            <li>
+              {activeNav === 'contatti' && <a href={root + 'contatti/index.html'} class="active">Contatti</a>}
+              {activeNav !== 'contatti' && <a href={root + 'contatti/index.html'}>Contatti</a>}
+            </li>
+            <li>
+              {activeNav === 'galleria' && <a href={root + 'galleria-fotografica/index.html'} class="active">Galleria</a>}
+              {activeNav !== 'galleria' && <a href={root + 'galleria-fotografica/index.html'}>Galleria</a>}
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    {section === 'estiva' && <nav class="subnav" aria-label="Rassegna estiva">
+      <div class="subnav-inner">
+        {estivaActive('estate-2026') && <a href={subnavPrefix + 'estate-2026/index.html'} class="active">Estate 2026</a>}
+        {estivaActive('estate-2026') === false && <a href={subnavPrefix + 'estate-2026/index.html'}>Estate 2026</a>}
+        {estivaActive('estate-2025') && <a href={subnavPrefix + 'estate-2025/index.html'} class="active">Estate 2025</a>}
+        {estivaActive('estate-2025') === false && <a href={subnavPrefix + 'estate-2025/index.html'}>Estate 2025</a>}
+        {estivaActive('estate-2024') && <a href={subnavPrefix + 'estate-2024/index.html'} class="active">Estate 2024</a>}
+        {estivaActive('estate-2024') === false && <a href={subnavPrefix + 'estate-2024/index.html'}>Estate 2024</a>}
+        {estivaActive('estate-2023') && <a href={subnavPrefix + 'estate-2023/index.html'} class="active">Estate 2023</a>}
+        {estivaActive('estate-2023') === false && <a href={subnavPrefix + 'estate-2023/index.html'}>Estate 2023</a>}
+        {estivaActive('estate-2022') && <a href={subnavPrefix + 'estate-2022/index.html'} class="active">Estate 2022</a>}
+        {estivaActive('estate-2022') === false && <a href={subnavPrefix + 'estate-2022/index.html'}>Estate 2022</a>}
+        {estivaActive('estate-2021') && <a href={subnavPrefix + 'estate-2021/index.html'} class="active">Estate 2021</a>}
+        {estivaActive('estate-2021') === false && <a href={subnavPrefix + 'estate-2021/index.html'}>Estate 2021</a>}
+        {estivaActive('estate-2020') && <a href={subnavPrefix + 'estate-2020/index.html'} class="active">Estate 2020</a>}
+        {estivaActive('estate-2020') === false && <a href={subnavPrefix + 'estate-2020/index.html'}>Estate 2020</a>}
+        {estivaActive('estate-2019') && <a href={subnavPrefix + 'estate-2019/index.html'} class="active">Estate 2019</a>}
+        {estivaActive('estate-2019') === false && <a href={subnavPrefix + 'estate-2019/index.html'}>Estate 2019</a>}
+        {estivaActive('estate-2018') && <a href={subnavPrefix + 'estate-2018/index.html'} class="active">Estate 2018</a>}
+        {estivaActive('estate-2018') === false && <a href={subnavPrefix + 'estate-2018/index.html'}>Estate 2018</a>}
+        {estivaActive('estate-2017') && <a href={subnavPrefix + 'estate-2017/index.html'} class="active">Estate 2017</a>}
+        {estivaActive('estate-2017') === false && <a href={subnavPrefix + 'estate-2017/index.html'}>Estate 2017</a>}
+        {estivaActive('prezzi') && <a href={subnavPrefix + 'prezzi/index.html'} class="active">Prezzi</a>}
+        {estivaActive('prezzi') === false && <a href={subnavPrefix + 'prezzi/index.html'}>Prezzi</a>}
+      </div>
+    </nav>}
+
+    {section === 'invernale' && <nav class="subnav" aria-label="Rassegna invernale">
+      <div class="subnav-inner">
+        {invernaleActive('inverno-2020') && <a href={subnavPrefix + 'inverno-2020/index.html'} class="active">Inverno 2020</a>}
+        {invernaleActive('inverno-2020') === false && <a href={subnavPrefix + 'inverno-2020/index.html'}>Inverno 2020</a>}
+        {invernaleActive('inverno-2019') && <a href={subnavPrefix + 'inverno-2019/index.html'} class="active">Inverno 2019</a>}
+        {invernaleActive('inverno-2019') === false && <a href={subnavPrefix + 'inverno-2019/index.html'}>Inverno 2019</a>}
+        {invernaleActive('inverno-2018') && <a href={subnavPrefix + 'inverno-2018/index.html'} class="active">Inverno 2018</a>}
+        {invernaleActive('inverno-2018') === false && <a href={subnavPrefix + 'inverno-2018/index.html'}>Inverno 2018</a>}
+        {invernaleActive('prezzi') && <a href={subnavPrefix + 'prezzi/index.html'} class="active">Prezzi</a>}
+        {invernaleActive('prezzi') === false && <a href={subnavPrefix + 'prezzi/index.html'}>Prezzi</a>}
+      </div>
+    </nav>}
+
+    <slot />
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p>© Amici del Cinema del Gambarogno · Vira Gambarogno</p>
+        <div class="footer-links">
+          <a href={root + 'contatti/index.html'}>Contatti</a>
+          {aboutPage && <a href="index.html">Informazioni legali</a>}
+          {!aboutPage && <a href={root + 'about/index.html'}>Informazioni legali</a>}
+        </div>
+      </div>
+    </footer>
+
+    <script src={root + 'js/main.js'}></script>
+  </body>
+</html>
