@@ -3,7 +3,7 @@ backend:
   repo: fedenetw/cinemavira
   branch: main
   base_url: https://cinemavira.ch
-  auth_endpoint: auth
+  auth_endpoint: api/auth
 
 media_folder: public/uploads
 public_folder: /uploads
