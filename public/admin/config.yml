@@ -1,0 +1,11 @@
+backend:
+  name: github
+  repo: fedenetw/cinemavira
+  branch: main
+  base_url: https://cinemavira.ch
+  auth_endpoint: auth
+
+media_folder: public/uploads
+public_folder: /uploads
+
+site_url: https://cinemavira.ch
