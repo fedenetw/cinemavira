@@ -9,3 +9,27 @@ media_folder: public/uploads
 public_folder: /uploads
 
 site_url: https://cinemavira.ch
+
+collections:
+  - name: "pagine"
+    label: "Pagine"
+    files:
+      - name: "homepage"
+        label: "Homepage"
+        file: "src/pages/index.md"
+        fields:
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../layouts/Base.astro" }
+          - { label: "Titolo", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text" }
+          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "su-di-noi" }
+          - { label: "Contenuto", name: "body", widget: "markdown" }
+
+      - name: "about"
+        label: "Informazioni legali"
+        file: "src/pages/about/index.md"
+        fields:
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../../../layouts/Base.astro" }
+          - { label: "Titolo", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text" }
+          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden" }
+          - { label: "Contenuto", name: "body", widget: "markdown" }
