@@ -1,8 +1,10 @@
 ---
 layout: ../layouts/Base.astro
-title: 'Amici del Cinema del Gambarogno'
-description: 'Amici del Cinema del Gambarogno — proiezioni cinematografiche a Vira Gambarogno, rassegna estiva sul sagrato della chiesa e programmazione invernale.'
-activeNav: 'su-di-noi'
+title: Amici del Cinema del Gambarogno
+description: Amici del Cinema del Gambarogno — proiezioni cinematografiche a
+  Vira Gambarogno, rassegna estiva sul sagrato della chiesa e programmazione
+  invernale.
+activeNav: su-di-noi
 ---
 <section class="hero">
   <div class="hero-inner">
@@ -43,5 +45,7 @@ activeNav: 'su-di-noi'
     <a href="https://www.facebook.com/Amici-del-Cinema-del-Gambarogno-1725933784351613/" class="social-link" target="_blank" rel="noopener noreferrer">
       Seguici su Facebook — Amici del Cinema del Gambarogno
     </a>
+
+<p>Questo è un test</p>
   </div>
 </main>
