@@ -28,8 +28,25 @@ collections:
         label: "Informazioni legali"
         file: "src/pages/about/index.md"
         fields:
-          - { label: "Layout", name: "layout", widget: "hidden", default: "../../../layouts/Base.astro" }
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../../layouts/Base.astro" }
           - { label: "Titolo", name: "title", widget: "string" }
           - { label: "Descrizione", name: "description", widget: "text" }
           - { label: "Navigazione attiva", name: "activeNav", widget: "hidden" }
           - { label: "Contenuto", name: "body", widget: "markdown" }
+
+  - name: "rassegne-estive"
+    label: "Rassegne estive"
+    label_singular: "Rassegna estiva"
+    folder: "src/pages/rassegna-estiva"
+    create: true
+    slug: "estate-{{anno}}"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "../../layouts/RassegnaLayout.astro" }
+      - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "estiva" }
+      - { label: "Sezione", name: "section", widget: "hidden", default: "estiva" }
+      - { label: "Anno", name: "anno", widget: "number" }
+      - { label: "Titolo pagina", name: "pageTitle", widget: "string" }
+      - { label: "Titolo SEO", name: "title", widget: "string" }
+      - { label: "Descrizione", name: "description", widget: "text" }
+      - { label: "Locandina", name: "locandina", widget: "image", required: false }
+      - { label: "Contenuto", name: "body", widget: "markdown", required: false }

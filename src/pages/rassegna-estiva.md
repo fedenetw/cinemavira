@@ -1,5 +1,5 @@
 ---
-layout: ../../layouts/Base.astro
+layout: ../layouts/Base.astro
 title: 'Rassegna estiva — Amici del Cinema del Gambarogno'
 description: "Rassegna estiva — cinema all'aperto sul sagrato della chiesa di Vira Gambarogno."
 activeNav: 'estiva'

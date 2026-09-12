@@ -1,5 +1,5 @@
 ---
-layout: ../../layouts/Base.astro
+layout: ../layouts/Base.astro
 title: 'Rassegna invernale — Amici del Cinema del Gambarogno'
 description: 'Rassegna invernale — Amici del Cinema del Gambarogno.'
 activeNav: 'invernale'

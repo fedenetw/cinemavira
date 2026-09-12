@@ -1,44 +1,53 @@
 ---
-const estive = [
-  { anno: 2026, slug: 'estate-2026' },
-  { anno: 2025, slug: 'estate-2025' },
-  { anno: 2024, slug: 'estate-2024' },
-  { anno: 2023, slug: 'estate-2023' },
-  { anno: 2022, slug: 'estate-2022' },
-  { anno: 2021, slug: 'estate-2021' },
-  { anno: 2020, slug: 'estate-2020' },
-  { anno: 2019, slug: 'estate-2019' },
-  { anno: 2018, slug: 'estate-2018' },
-  { anno: 2017, slug: 'estate-2017' },
-];
+/* Subnav delle sezioni rassegna (estiva / invernale).
+ *
+ * Le edizioni sono scovate in modo automatico in src/pages con
+ * import.meta.glob: appena esiste un .md per l'anno (creato anche da
+ * Decap CMS il link compare nella nav alla prossima build).
+ * L'elemento attivo è derivato dall'URL corrente, quindi nessuna pagina
+ * deve dichiararlo nel frontmatter.
+ * I link sono relativi: il sito continua a funzionare sotto ogni sottopath.
+ *
+ * Proprietà: type ('estiva' | 'invernale').
+ */
 
-const invernali = [
-  { anno: 2020, slug: 'inverno-2020' },
-  { anno: 2019, slug: 'inverno-2019' },
-  { anno: 2018, slug: 'inverno-2018' },
-];
+const { type } = Astro.props;
+const seasonLabel = type === 'estiva' ? 'Estate' : 'Inverno';
 
-const { type, active } = Astro.props;
+/* import.meta.glob richiede pattern statici: un glob per ciascuna forma
+   di pagina (file piatto .md o cartella con index.md) e per ciascuna
+   rassegna; poi filtriamo per la sezione richiesta. */
+const paths = [
+  ...Object.keys(import.meta.glob('../pages/rassegna-estiva/*.md')),
+  ...Object.keys(import.meta.glob('../pages/rassegna-estiva/*/index.md')),
+  ...Object.keys(import.meta.glob('../pages/rassegna-invernale/*.md')),
+  ...Object.keys(import.meta.glob('../pages/rassegna-invernale/*/index.md')),
+].filter((p) => type === 'estiva' ? p.includes('/rassegna-estiva/') : p.includes('/rassegna-invernale/'));
 
-const items = type === 'estiva' ? estive : invernali;
-const prefix = type === 'estiva' ? 'estate-' : 'inverno-';
+const items = paths
+  .map((p) => {
+    const m = p.match(/(estate|inverno)-(\d{4})/);
+    return m ? { slug: `${m[1]}-${m[2]}`, anno: Number(m[2]) } : null;
+  })
+  .filter(Boolean)
+  .sort((a, b) => b.anno - a.anno);
+
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+const prefix = segments.length > 1 ? '../' : '';
+const active = segments[segments.length - 1] || '';
 ---
 
-<nav class="subnav" aria-label={type === 'estiva' ? 'Rassegna estiva' : 'Rassegna invernale'}>
+<nav class="subnav" aria-label={`Rassegna ${type}`}>
   <div class="subnav-inner">
     {items.map((item) => (
       <a
-        href={`../${item.slug}/index.html`}
+        href={prefix + item.slug + '/index.html'}
         class={active === item.slug ? 'active' : undefined}
       >
-        {prefix === 'estate-' ? 'Estate' : 'Inverno'} {item.anno}
+        {seasonLabel} {item.anno}
       </a>
     ))}
-
-    <a
-      href="../prezzi/index.html"
-      class={active === 'prezzi' ? 'active' : undefined}
-    >
+    <a href={prefix + 'prezzi/index.html'} class={active === 'prezzi' ? 'active' : undefined}>
       Prezzi
     </a>
   </div>

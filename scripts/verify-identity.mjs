@@ -61,9 +61,31 @@ const walk = (dir, base = dir) => {
 
 const hash = (p) => createHash('sha256').update(readFileSync(p)).digest('hex').slice(0, 16);
 
+/* Sorgente di una pagina: preferita la forma sottocartella/<index>.md,
+ * altrimenti il file piatto <pagina>.md (forma che produce Decap CMS). */
+const mdPathFor = (page) => {
+  const sub = join(PAGES_SRC, page, 'index.md');
+  if (existsSync(sub)) return sub;
+  const flat = join(PAGES_SRC, page + '.md');
+  if (existsSync(flat)) return flat;
+  return sub;
+};
+
+/* Valore frontmatter (chiave: valore), anche per scalari YAML multi-riga
+ * (Decap avvolge le stringhe lunghe su più righe). */
+const fmValue = (front, key) => {
+  const lines = front.split('\n');
+  const i = lines.findIndex((l) => new RegExp(`^${key}:`).test(l));
+  if (i === -1) return null;
+  const parts = [lines[i].replace(new RegExp(`^${key}:[ \\t]*`), '')].filter(Boolean);
+  let j = i + 1;
+  while (j < lines.length && /^[ \t]+\S/.test(lines[j])) { parts.push(lines[j].trim()); j++; }
+  return parts.join(' ').replace(/^['"]|['"]$/g, '').trim();
+};
+
 console.log('=== 1) Corpo .md byte-identico nell\'HTML costruito ===');
 for (const page of PAGES) {
-  const mdPath = join(PAGES_SRC, page, 'index.md');
+  const mdPath = mdPathFor(page);
   const distPath = join(DIST, page, 'index.html');
   if (!existsSync(distPath)) { fail(`${page || '/'}: manca dist`); continue; }
   const raw = readFileSync(mdPath, 'utf8');
@@ -89,15 +111,13 @@ for (const page of PAGES) {
 
 console.log('=== 2) title / description frontmatter ===');
 for (const page of PAGES) {
-  const mdPath = join(PAGES_SRC, page, 'index.md');
+  const mdPath = mdPathFor(page);
   const distPath = join(DIST, page, 'index.html');
   const raw = readFileSync(mdPath, 'utf8');
   const front = raw.match(/^---\n([\s\S]*?)\n---/)[1];
-  const title = (front.match(/^title:\s*(.+)$/m) || [])[1];
-  const desc = (front.match(/^description:\s*(.+)$/m) || [])[1];
+  const t = fmValue(front, 'title') || '';
+  const d = fmValue(front, 'description') || '';
   const distHtml = readFileSync(distPath, 'utf8');
-  const t = title.replace(/^['"]|['"]$/g, '');
-  const d = desc.replace(/^['"]|['"]$/g, '');
   if (distHtml.includes(`<title>${t}</title>`)) ok(`${page}: title`);
   else fail(`${page}: title atteso <title>${t}</title>`);
   if (distHtml.includes(`<meta name="description" content="${d}">`)) ok(`${page}: description`);
@@ -135,7 +155,8 @@ for (const page of PAGES) {
 
 console.log('=== 5) asset dist/ ⇔ public/ ===');
 const pubFiles = walk(PUBLIC_DIR).map((f) => ({ rel: f, sha: hash(join(PUBLIC_DIR, f)), size: statSync(join(PUBLIC_DIR, f)).size }));
-const distNonPages = walk(DIST).filter((f) => !f.endsWith('index.html') && f !== '..').map((f) => ({ rel: f, sha: hash(join(DIST, f)), size: statSync(join(DIST, f)).size }));
+const pageRel = new Set(PAGES.map((p) => (p ? p + '/index.html' : 'index.html')));
+const distNonPages = walk(DIST).filter((f) => !pageRel.has(f)).map((f) => ({ rel: f, sha: hash(join(DIST, f)), size: statSync(join(DIST, f)).size }));
 const pubByRel = new Map(pubFiles.map((f) => [f.rel, f]));
 const allEqual = pubFiles.length === distNonPages.length &&
   pubFiles.every((f) => { const d = distNonPages.find((x) => x.rel === f.rel); return d && d.sha === f.sha && d.size === f.size; });

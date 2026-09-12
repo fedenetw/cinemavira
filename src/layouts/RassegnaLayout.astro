@@ -1,0 +1,43 @@
+---
+/* Layout strutturato per le pagine delle edizioni delle rassegne
+ * (estive e invernali), usato dalla collection Decap CMS.
+ *
+ * Frontmatter del .md:
+ *   pageTitle   → <h1> del contenuto
+ *   title       → <title> (head) — gestito da Base
+ *   description → meta description — gestito da Base
+ *   locandina   → (facoltativa) percorso della locandina; un percorso
+ *                 assoluto tipo /locandine/estate/2026.jpg viene riscritto
+ *                 in relativo rispetto alla pagina, così il sito continua
+ *                 a funzionare sotto ogni sottopath;
+ *   body        → contenuto centrale (es. il blocco <div class="note">…</div>).
+ */
+import Base from './Base.astro';
+
+const front = { ...Astro.props, ...(Astro.props.frontmatter || {}) };
+const { pageTitle = '', locandina = '' } = front;
+
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+const root = '../'.repeat(segments.length);
+const up = segments.length > 1 ? '../'.repeat(segments.length - 1) : '';
+const invernale = Astro.url.pathname.includes('rassegna-invernale');
+
+const locSrc = locandina
+  ? locandina.startsWith('/')
+    ? root + locandina.slice(1)
+    : locandina
+  : '';
+---
+
+<Base {...Astro.props}>
+  <main>
+    <div class="container">
+      <h1>{pageTitle}</h1>
+      {locSrc && <img src={locSrc}>}
+      <slot />
+      <p style="margin-top: 1.5rem;">
+        <a href={up + 'index.html'} class="btn btn-outline">← Rassegna {invernale ? 'invernale' : 'estiva'}</a>
+      </p>
+    </div>
+  </main>
+</Base>
