@@ -1,41 +1,82 @@
 ---
-/* Layout strutturato per le pagine delle edizioni delle rassegne
- * (estive e invernali), usato dalla collection Decap CMS.
- *
- * Frontmatter del .md:
- *   pageTitle   → <h1> del contenuto
- *   title       → <title> (head) — gestito da Base
- *   description → meta description — gestito da Base
- *   locandina   → (facoltativa) percorso della locandina; un percorso
- *                 assoluto tipo /locandine/estate/2026.jpg viene riscritto
- *                 in relativo rispetto alla pagina, così il sito continua
- *                 a funzionare sotto ogni sottopath;
- *   body        → contenuto centrale (es. il blocco <div class="note">…</div>).
- */
+/* Layout strutturato per le pagine delle rassegne (estive e invernali)
+   e per le pagine dei prezzi, usato dalla collection Decap CMS.
+
+   Frontmatter del .md (tutti i campi sono testo semplice, senza HTML):
+     pageTitle   → <h1> del contenuto
+     title       → <title> (head) — gestito da Base
+     description → meta description — gestito da Base
+     locandina   → (facoltativa) percorso dell'immagine; un percorso
+                   assoluto tipo /locandine/estate/2026.jpg viene riscritto
+                   in relativo rispetto alla pagina, così il sito continua
+                   a funzionare sotto ogni sottopath;
+     lead        → (facoltativa) frase di introduzione → <p class="lead">
+     prezzi      → (facoltativa) lista {label, value} → <ul class="price-list">
+     nota        → (facoltativa) una o più righe di testo, i paragrafi si
+                   separano con una riga vuota. Sintassi minima:
+                   **grassetto** e [etichetta](https://…).
+   Il bottone di ritorno viene sempre generato qui, con lo stile corretto
+   per tipo di pagina. */
+
 import Base from './Base.astro';
+import { renderInlineText, renderTextBlocks } from '../lib/text';
 
 const front = { ...Astro.props, ...(Astro.props.frontmatter || {}) };
-const { pageTitle = '', locandina = '' } = front;
+const {
+  pageTitle = '',
+  locandina = '',
+  lead = '',
+  prezzi = null,
+  nota = '',
+} = front;
 
 const segments = Astro.url.pathname.split('/').filter(Boolean);
 const root = '../'.repeat(segments.length);
-const up = segments.length > 1 ? '../'.repeat(segments.length - 1) : '';
+const isPrezziPage = segments.includes('prezzi');
+/* La pagina di un'edizione vive nel livello della sezione (due segmenti);
+   la pagina prezzi vive un livello più in basso, quindi il bottone di
+   ritorno sale sempre solo di un livello: ../index.html. */
+const up = isPrezziPage ? '../' : segments.length > 1 ? '../'.repeat(segments.length - 1) : '';
 const invernale = Astro.url.pathname.includes('rassegna-invernale');
 
-const locSrc = locandina
-  ? locandina.startsWith('/')
-    ? root + locandina.slice(1)
-    : locandina
-  : '';
+const rawLoc = String(locandina).trim();
+const locSrc = rawLoc ? (rawLoc.startsWith('/') ? root + rawLoc.slice(1) : rawLoc) : '';
+const hasLocandina = !!locSrc;
+const leadHtml = String(lead).trim() ? renderInlineText(String(lead)) : '';
+const list = Array.isArray(prezzi) ? prezzi.filter((p) => p && (p.label || p.value)) : [];
+const noteHtml = String(nota).trim() ? renderTextBlocks(String(nota)) : '';
+
+/* Il contenitore della nota e lo stile del bottone di ritorno seguono il
+   tipo di pagina, identico alle versioni precedenti del sito:
+   - pagina edizione con locandina → <div class="note"> + margine 1.5rem
+   - pagina edizione senza locandina (es. 2020) → <div class="content-block"> + bottone semplice
+   - pagina prezzi → <div class="note"> + margine 2rem */
+const noteClass = hasLocandina || leadHtml || list.length ? 'note' : 'content-block';
+const backlinkStyle = hasLocandina
+  ? 'margin-top: 1.5rem;'
+  : isPrezziPage
+    ? 'margin-top: 2rem;'
+    : '';
 ---
 
 <Base {...Astro.props}>
   <main>
     <div class="container">
       <h1>{pageTitle}</h1>
-      {locSrc && <img src={locSrc}>}
-      <slot />
-      <p style="margin-top: 1.5rem;">
+      {hasLocandina && <img src={locSrc}>}
+      {leadHtml && <p class="lead">{leadHtml}</p>}
+      {list.length > 0 && (
+        <ul class="price-list">
+          {list.map((p) => (
+            <li>
+              <span class="label">{String(p.label)}</span>
+              <span class="value">{String(p.value)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      {noteHtml && <div class={noteClass} set:html={noteHtml} />}
+      <p {...(backlinkStyle ? { style: backlinkStyle } : {})}>
         <a href={up + 'index.html'} class="btn btn-outline">← Rassegna {invernale ? 'invernale' : 'estiva'}</a>
       </p>
     </div>

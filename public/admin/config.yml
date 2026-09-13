@@ -18,11 +18,28 @@ collections:
         label: "Homepage"
         file: "src/pages/index.md"
         fields:
-          - { label: "Layout", name: "layout", widget: "hidden", default: "../layouts/Base.astro" }
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../layouts/Home.astro" }
+          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "su-di-noi" }
           - { label: "Titolo", name: "title", widget: "string" }
           - { label: "Descrizione", name: "description", widget: "text" }
-          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "su-di-noi" }
-          - { label: "Contenuto", name: "body", widget: "markdown" }
+          - { label: "Titolo in evidenza", name: "heroTitolo", widget: "string" }
+          - { label: "Sottotitolo in evidenza", name: "heroTesto", widget: "text" }
+          - { label: "Benvenuto", name: "benvenuto", widget: "text" }
+          - { label: "Presentazione", name: "presentazione", widget: "text" }
+          - { label: "Card 1 — Titolo", name: "card1Titolo", widget: "string" }
+          - { label: "Card 1 — Testo", name: "card1Testo", widget: "text" }
+          - { label: "Card 1 — Bottone", name: "card1Bottone", widget: "string" }
+          - { label: "Card 1 — Link", name: "card1Link", widget: "string" }
+          - { label: "Card 2 — Titolo", name: "card2Titolo", widget: "string" }
+          - { label: "Card 2 — Testo", name: "card2Testo", widget: "text" }
+          - { label: "Card 2 — Bottone", name: "card2Bottone", widget: "string" }
+          - { label: "Card 2 — Link", name: "card2Link", widget: "string" }
+          - { label: "Card 3 — Titolo", name: "card3Titolo", widget: "string" }
+          - { label: "Card 3 — Testo", name: "card3Testo", widget: "text" }
+          - { label: "Card 3 — Bottone", name: "card3Bottone", widget: "string" }
+          - { label: "Card 3 — Link", name: "card3Link", widget: "string" }
+          - { label: "Testo social", name: "socialTesto", widget: "string" }
+          - { label: "Link social", name: "socialLink", widget: "string" }
 
       - name: "about"
         label: "Informazioni legali"
@@ -49,4 +66,68 @@ collections:
       - { label: "Titolo SEO", name: "title", widget: "string" }
       - { label: "Descrizione", name: "description", widget: "text" }
       - { label: "Locandina", name: "locandina", widget: "image", required: false }
-      - { label: "Contenuto", name: "body", widget: "markdown", required: false }
+      - { label: "Presentazione", name: "lead", widget: "text", required: false }
+      - { label: "Prezzi", name: "prezzi", widget: "list", required: false,
+          fields:
+            - { label: "Voce", name: "label", widget: "string" }
+            - { label: "Valore", name: "value", widget: "string" } }
+      - { label: "Nota", name: "nota", widget: "text", required: false }
+
+  - name: "rassegne-invernali"
+    label: "Rassegne invernali"
+    label_singular: "Rassegna invernale"
+    folder: "src/pages/rassegna-invernale"
+    create: true
+    slug: "inverno-{{anno}}"
+    fields:
+      - { label: "Layout", name: "layout", widget: "hidden", default: "../../layouts/RassegnaLayout.astro" }
+      - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "invernale" }
+      - { label: "Sezione", name: "section", widget: "hidden", default: "invernale" }
+      - { label: "Anno", name: "anno", widget: "number" }
+      - { label: "Titolo pagina", name: "pageTitle", widget: "string" }
+      - { label: "Titolo SEO", name: "title", widget: "string" }
+      - { label: "Descrizione", name: "description", widget: "text" }
+      - { label: "Locandina", name: "locandina", widget: "image", required: false }
+      - { label: "Presentazione", name: "lead", widget: "text", required: false }
+      - { label: "Prezzi", name: "prezzi", widget: "list", required: false,
+          fields:
+            - { label: "Voce", name: "label", widget: "string" }
+            - { label: "Valore", name: "value", widget: "string" } }
+      - { label: "Nota", name: "nota", widget: "text", required: false }
+
+  - name: "prezzi"
+    label: "Pagine prezzi"
+    files:
+      - name: "prezzi-estiva"
+        label: "Prezzi rassegna estiva"
+        file: "src/pages/rassegna-estiva/prezzi/index.md"
+        fields:
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../../../layouts/RassegnaLayout.astro" }
+          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "estiva" }
+          - { label: "Sezione", name: "section", widget: "hidden", default: "estiva" }
+          - { label: "Titolo pagina", name: "pageTitle", widget: "string" }
+          - { label: "Titolo SEO", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text" }
+          - { label: "Presentazione", name: "lead", widget: "text" }
+          - { label: "Prezzi", name: "prezzi", widget: "list",
+              fields:
+                - { label: "Voce", name: "label", widget: "string" }
+                - { label: "Valore", name: "value", widget: "string" } }
+          - { label: "Nota", name: "nota", widget: "text" }
+
+      - name: "prezzi-invernale"
+        label: "Prezzi rassegna invernale"
+        file: "src/pages/rassegna-invernale/prezzi/index.md"
+        fields:
+          - { label: "Layout", name: "layout", widget: "hidden", default: "../../../layouts/RassegnaLayout.astro" }
+          - { label: "Navigazione attiva", name: "activeNav", widget: "hidden", default: "invernale" }
+          - { label: "Sezione", name: "section", widget: "hidden", default: "invernale" }
+          - { label: "Titolo pagina", name: "pageTitle", widget: "string" }
+          - { label: "Titolo SEO", name: "title", widget: "string" }
+          - { label: "Descrizione", name: "description", widget: "text" }
+          - { label: "Presentazione", name: "lead", widget: "text" }
+          - { label: "Prezzi", name: "prezzi", widget: "list",
+              fields:
+                - { label: "Voce", name: "label", widget: "string" }
+                - { label: "Valore", name: "value", widget: "string" } }
+          - { label: "Nota", name: "nota", widget: "text" }
