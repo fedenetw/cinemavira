@@ -1,5 +1,5 @@
 ---
-layout: "../layouts/Home.astro"
+layout: "../layouts/Base.astro"
 title: "Amici del Cinema del Gambarogno"
 description: "Amici del Cinema del Gambarogno — proiezioni cinematografiche a Vira Gambarogno, rassegna estiva sul sagrato della chiesa e programmazione invernale."
 activeNav: "su-di-noi"
