@@ -1,0 +1,81 @@
+---
+/* Layout strutturato per la homepage: ogni blocco è un campo di testo
+   semplice (senza HTML) editabile da Decap CMS.
+
+   Frontmatter del .md:
+     heroTitolo    → <h1> dell'hero
+     heroTesto     → frase di introduzione (lead) dell'hero
+     benvenuto     → paragrafo evidenziato (highlight)
+     presentazione → uno o più paragrafi; i paragrafi si separano con una
+                     riga vuota. Sintassi minima: **grassetto** e
+                     [etichetta](https://…).
+     card1/2/3     → Titolo, Testo, Bottone, Link (una riga ciascuno)
+     socialTesto   → testo della riga social
+     socialLink    → URL della riga social (una riga) */
+
+import Base from './Base.astro';
+import { renderInlineText, renderTextBlocks } from '../lib/text';
+
+const front = { ...Astro.props, ...(Astro.props.frontmatter || {}) };
+const {
+  heroTitolo = '',
+  heroTesto = '',
+  benvenuto = '',
+  presentazione = '',
+  card1Titolo = '', card1Testo = '', card1Bottone = '', card1Link = '',
+  card2Titolo = '', card2Testo = '', card2Bottone = '', card2Link = '',
+  card3Titolo = '', card3Testo = '', card3Bottone = '', card3Link = '',
+  socialTesto = '',
+  socialLink = '',
+} = front;
+
+const presentHtml = String(presentazione).trim()
+  ? renderTextBlocks(String(presentazione))
+  : '';
+---
+
+<Base {...Astro.props}>
+  <section class="hero">
+    <div class="hero-inner">
+      <br><br>
+      <h1 style="color: black">{heroTitolo}</h1>
+      <hr><hr>
+      {String(heroTesto).trim() && (
+        <p class="lead" style="color: bisque">{renderInlineText(String(heroTesto))}</p>
+      )}
+    </div>
+  </section>
+
+  <main>
+    <div class="container">
+      {String(benvenuto).trim() && (
+        <div class="content-block">
+          <p class="highlight">{renderInlineText(String(benvenuto))}</p>
+        </div>
+      )}
+      {presentHtml && <div class="content-block" set:html={presentHtml} />}
+      <div class="cards">
+        <article class="card">
+          <h3>{card1Titolo}</h3>
+          {String(card1Testo).trim() && <p>{renderInlineText(String(card1Testo))}</p>}
+          {card1Bottone && <a href={card1Link} class="btn btn-outline">{card1Bottone}</a>}
+        </article>
+        <article class="card">
+          <h3>{card2Titolo}</h3>
+          {String(card2Testo).trim() && <p>{renderInlineText(String(card2Testo))}</p>}
+          {card2Bottone && <a href={card2Link} class="btn btn-outline">{card2Bottone}</a>}
+        </article>
+        <article class="card">
+          <h3>{card3Titolo}</h3>
+          {String(card3Testo).trim() && <p>{renderInlineText(String(card3Testo))}</p>}
+          {card3Bottone && <a href={card3Link} class="btn btn-outline">{card3Bottone}</a>}
+        </article>
+      </div>
+      {socialLink && (
+        <a href={socialLink} class="social-link" target="_blank" rel="noopener noreferrer">
+          {socialTesto}
+        </a>
+      )}
+    </div>
+  </main>
+</Base>
